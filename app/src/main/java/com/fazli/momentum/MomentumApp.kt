@@ -1,5 +1,10 @@
 package com.fazli.momentum
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -69,7 +74,9 @@ fun MomentumApp() {
         NavHost(
             navController = navController,
             startDestination = TopLevelDestination.TODAY.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            enterTransition = { fadeIn(tween(220)) + slideInHorizontally(tween(220)) { it / 6 } },
+            exitTransition = { fadeOut(tween(220)) + slideOutHorizontally(tween(220)) { -it / 6 } }
         ) {
             composable(TopLevelDestination.TODAY.route) { TodayScreen() }
             composable(TopLevelDestination.PLAN.route) { PlanScreen() }
