@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. Compose overrides colors at runtime via MIDNIGHT scheme,
+         but this prevents a flash of default styling before first composition. -->
+    <style name="Theme.Momentum" parent="android:Theme.Material.NoActionBar">
+        <item name="android:colorBackground">@color/midnight_background</item>
+        <item name="android:statusBarColor">@color/midnight_surface</item>
+        <item name="android:navigationBarColor">@color/midnight_surface</item>
+    </style>
+</resources>

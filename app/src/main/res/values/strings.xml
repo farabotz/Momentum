@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Momentum</string>
+    <string name="tab_today">Hari Ini</string>
+    <string name="tab_plan">Rencana</string>
+    <string name="tab_progress">Progres</string>
+    <string name="tab_settings">Pengaturan</string>
+</resources>
