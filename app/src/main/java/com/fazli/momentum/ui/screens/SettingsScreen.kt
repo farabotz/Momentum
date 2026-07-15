@@ -251,7 +251,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     ) { Text("Export ke JSON") }
                     OutlinedButton(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { importLauncher.launch("application/json") }
+                        onClick = { importLauncher.launch("*/*") }
                     ) { Text("Import dari JSON") }
                     if (statusMessage != null) {
                         Text(statusMessage!!, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
@@ -322,7 +322,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
         AlertDialog(
             onDismissRequest = { confirmReset = false },
             title = { Text("Reset progress?") },
-            text = { Text("Semua riwayat centang, review mingguan, catatan harian, dan progress counter akan dihapus. Pilar & task tidak ikut terhapus. Tindakan ini tidak bisa dibatalkan.") },
+            text = { Text("Semua riwayat centang, review mingguan, catatan harian, dan progress counter akan dihapus. Centang milestone direset ke belum selesai, dan tanggal mulai periode diset ulang ke hari ini. Pilar & task tidak ikut terhapus. Tindakan ini tidak bisa dibatalkan.") },
             confirmButton = { TextButton(onClick = { viewModel.resetProgress(); confirmReset = false }) { Text("Reset") } },
             dismissButton = { TextButton(onClick = { confirmReset = false }) { Text("Batal") } }
         )
