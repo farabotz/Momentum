@@ -3,4 +3,6 @@
     <color name="midnight_background">#14171c</color>
     <color name="midnight_surface">#1b1f26</color>
     <color name="midnight_primary">#d9a441</color>
+    <color name="momentum_teal">#5fa9a0</color>
+    <color name="momentum_purple">#9b7ede</color>
 </resources>

@@ -165,6 +165,15 @@ private fun HarianView(
     onMove: (Task, Task) -> Unit
 ) {
     LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        if (uiState.pillars.isEmpty()) {
+            item {
+                Text(
+                    "Belum ada pilar. Tambah pilar dulu di Pengaturan.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
         uiState.pillars.forEach { pillar ->
             val tasks = uiState.todayTasksByPillar[pillar].orEmpty()
             item(key = pillar.id) {

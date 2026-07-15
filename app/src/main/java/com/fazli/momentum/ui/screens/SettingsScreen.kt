@@ -92,17 +92,10 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
     var pillarPendingDelete by remember { mutableStateOf<Pillar?>(null) }
     var confirmReset by remember { mutableStateOf(false) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
+    var pendingImportUri by remember { mutableStateOf<Uri?>(null) }
 
     val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri == null) return@rememberLauncherForActivityResult
-        scope.launch {
-            val json = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
-            if (json != null) {
-                runCatching { viewModel.importData(json) }
-                    .onSuccess { statusMessage = "Import berhasil." }
-                    .onFailure { statusMessage = "Import gagal: file tidak valid." }
-            }
-        }
+        if (uri != null) pendingImportUri = uri
     }
 
     LazyColumn(
@@ -123,6 +116,15 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
         }
 
         item { SectionTitle("Kelola Pilar & Task") }
+        if (uiState.pillars.isEmpty()) {
+            item {
+                Text(
+                    "Belum ada pilar. Tambah pilar dulu buat mulai bikin task.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
         items(uiState.pillars, key = { it.id }) { pillar ->
             val tasks = uiState.tasksByPillar[pillar].orEmpty()
             Card(modifier = Modifier.fillMaxWidth().animateContentSize()) {
@@ -334,6 +336,28 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             dismissButton = { TextButton(onClick = { confirmReset = false }) { Text("Batal") } }
         )
     }
+
+    pendingImportUri?.let { uri ->
+        AlertDialog(
+            onDismissRequest = { pendingImportUri = null },
+            title = { Text("Import data?") },
+            text = { Text("Data dari file ini akan digabung ke database. Pilar/task/riwayat/dsb dengan ID yang sama akan ditimpa oleh isi file.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    pendingImportUri = null
+                    scope.launch {
+                        val json = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+                        if (json != null) {
+                            runCatching { viewModel.importData(json) }
+                                .onSuccess { statusMessage = "Import berhasil." }
+                                .onFailure { statusMessage = "Import gagal: file tidak valid." }
+                        }
+                    }
+                }) { Text("Import") }
+            },
+            dismissButton = { TextButton(onClick = { pendingImportUri = null }) { Text("Batal") } }
+        )
+    }
 }
 
 @Composable
@@ -344,12 +368,14 @@ private fun SectionTitle(text: String) {
 @Composable
 private fun ThemeOptionCard(theme: AppTheme, selected: Boolean, onClick: () -> Unit) {
     val colors = colorSchemeFor(theme)
+    val containerColor by androidx.compose.animation.animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface,
+        label = "theme-card-container"
+    )
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
-        ),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
         border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
     ) {
         Row(
@@ -368,7 +394,7 @@ private fun ThemeOptionCard(theme: AppTheme, selected: Boolean, onClick: () -> U
             }
             Spacer(Modifier.width(4.dp))
             Text(labelFor(theme), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-            if (selected) {
+            androidx.compose.animation.AnimatedVisibility(visible = selected) {
                 Icon(Icons.Filled.Check, contentDescription = "Terpilih", tint = MaterialTheme.colorScheme.primary)
             }
         }

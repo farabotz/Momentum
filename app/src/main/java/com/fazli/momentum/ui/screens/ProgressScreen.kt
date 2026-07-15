@@ -58,6 +58,9 @@ fun ProgressScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item { SectionTitle("Progress Counter") }
+        if (uiState.counters.isEmpty()) {
+            item { EmptyStateText("Belum ada progress counter.") }
+        }
         items(uiState.counters, key = { it.id }) { counter ->
             CounterCard(counter, onStep = { viewModel.stepCounter(counter, it) }, onSet = { viewModel.setCounterValue(counter.id, it) })
         }
@@ -73,12 +76,16 @@ fun ProgressScreen(modifier: Modifier = Modifier) {
                 StatChip("Streak Terpanjang", "${uiState.longestStreak}", Modifier.wrapContentWidth())
             }
         }
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                uiState.bonusTallies.chunked(2).forEach { row ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        row.forEach { tally ->
-                            StatChip(tally.label, "${tally.count}x", Modifier.wrapContentWidth())
+        if (uiState.bonusTallies.isEmpty()) {
+            item { EmptyStateText("Belum ada task BONUS yang dilacak.") }
+        } else {
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    uiState.bonusTallies.chunked(2).forEach { row ->
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            row.forEach { tally ->
+                                StatChip(tally.label, "${tally.count}x", Modifier.wrapContentWidth())
+                            }
                         }
                     }
                 }
@@ -86,6 +93,9 @@ fun ProgressScreen(modifier: Modifier = Modifier) {
         }
 
         item { SectionTitle("Milestone") }
+        if (uiState.milestonesByMonth.isEmpty()) {
+            item { EmptyStateText("Belum ada milestone.") }
+        }
         uiState.milestonesByMonth.forEach { (month, milestones) ->
             item(key = "month_$month") {
                 Text("Bulan $month", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
@@ -103,6 +113,9 @@ fun ProgressScreen(modifier: Modifier = Modifier) {
 
         item { SectionTitle("Weekly Review") }
         item { WeeklyReviewForm(onSubmit = viewModel::submitReview) }
+        if (uiState.reviews.isEmpty()) {
+            item { EmptyStateText("Belum ada review mingguan.") }
+        }
         items(uiState.reviews, key = { it.id }) { review ->
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp)) {
@@ -114,6 +127,11 @@ fun ProgressScreen(modifier: Modifier = Modifier) {
             }
         }
     }
+}
+
+@Composable
+private fun EmptyStateText(text: String) {
+    Text(text = text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 @Composable

@@ -3,7 +3,14 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- Three ascending bars: momentum across the 3 pillars (Tubuh/Cyber & Income/Diri) -->
     <path
         android:fillColor="@color/midnight_primary"
-        android:pathData="M54,12L12,54L54,96L96,54Z" />
+        android:pathData="M28,62 L42,62 L42,82 L28,82 Z" />
+    <path
+        android:fillColor="@color/momentum_teal"
+        android:pathData="M46,48 L60,48 L60,82 L46,82 Z" />
+    <path
+        android:fillColor="@color/momentum_purple"
+        android:pathData="M64,32 L78,32 L78,82 L64,82 Z" />
 </vector>

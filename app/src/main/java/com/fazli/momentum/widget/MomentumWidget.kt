@@ -24,6 +24,7 @@ import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -150,7 +151,7 @@ private fun MediumWidgetContent(data: WidgetData) {
                     onCheckedChange = actionRunCallback<ToggleTaskAction>(actionParametersOf(TaskIdKey to task.id)),
                     text = task.title,
                     style = TextStyle(color = WidgetOnBackground, fontSize = 11.sp),
-                    modifier = GlanceModifier.fillMaxWidth()
+                    modifier = GlanceModifier.fillMaxWidth().height(48.dp)
                 )
             }
         }
