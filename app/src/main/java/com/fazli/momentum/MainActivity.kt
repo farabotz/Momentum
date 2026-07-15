@@ -6,15 +6,20 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.fazli.momentum.ui.theme.MidnightColorScheme
+import com.fazli.momentum.data.AppTheme
+import com.fazli.momentum.ui.theme.colorSchemeFor
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val app = application as MomentumApplication
         setContent {
+            val activeTheme by app.settingsRepository.activeThemeFlow.collectAsState(initial = AppTheme.MIDNIGHT)
             MaterialTheme(
-                colorScheme = MidnightColorScheme
+                colorScheme = colorSchemeFor(activeTheme)
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),

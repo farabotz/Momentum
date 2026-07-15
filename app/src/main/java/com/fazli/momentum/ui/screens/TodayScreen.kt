@@ -51,7 +51,7 @@ fun TodayScreen(modifier: Modifier = Modifier) {
         item {
             Column {
                 Text(
-                    text = "HARI KE-${uiState.dayNumber.coerceAtLeast(0)} / 090",
+                    text = "HARI KE-${uiState.dayNumber.coerceAtLeast(0)} / ${uiState.periodLengthDays.toString().padStart(3, '0')}",
                     style = MaterialTheme.typography.labelLarge,
                     fontFamily = FontFamily.Monospace,
                     color = MaterialTheme.colorScheme.primary
@@ -66,7 +66,7 @@ fun TodayScreen(modifier: Modifier = Modifier) {
 
         item {
             LinearProgressIndicator(
-                progress = { (uiState.dayNumber.toFloat() / 90f).coerceIn(0f, 1f) },
+                progress = { (uiState.dayNumber.toFloat() / uiState.periodLengthDays.coerceAtLeast(1).toFloat()).coerceIn(0f, 1f) },
                 modifier = Modifier.fillMaxWidth()
             )
         }

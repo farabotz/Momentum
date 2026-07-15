@@ -40,17 +40,10 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SegmentedButton
@@ -72,11 +65,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fazli.momentum.MomentumApplication
-import com.fazli.momentum.data.Pillar
 import com.fazli.momentum.data.Task
 import com.fazli.momentum.data.TaskRecurrence
 import com.fazli.momentum.data.TaskTier
 import com.fazli.momentum.ui.components.StatChip
+import com.fazli.momentum.ui.components.TaskFormDialog
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -333,124 +326,4 @@ private fun BulananView(uiState: PlanUiState, onMilestoneToggle: (String, Boolea
             }
         }
     }
-}
-
-@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
-@Composable
-private fun TaskFormDialog(
-    pillars: List<Pillar>,
-    existing: Task?,
-    onDismiss: () -> Unit,
-    onSave: (Task) -> Unit
-) {
-    var title by remember { mutableStateOf(existing?.title ?: "") }
-    var description by remember { mutableStateOf(existing?.description ?: "") }
-    var pillarId by remember { mutableStateOf(existing?.pillarId ?: pillars.firstOrNull()?.id ?: "") }
-    var tier by remember { mutableStateOf(existing?.tier ?: TaskTier.WAJIB) }
-    var recurrence by remember { mutableStateOf(existing?.recurrence ?: TaskRecurrence.DAILY) }
-    var targetMinutes by remember { mutableStateOf(existing?.targetMinutes?.toString() ?: "") }
-    var selectedDays by remember {
-        mutableStateOf(existing?.daysOfWeek?.split(",")?.mapNotNull { it.trim().toIntOrNull() }?.toSet() ?: emptySet())
-    }
-    var pillarMenuExpanded by remember { mutableStateOf(false) }
-    var recurrenceMenuExpanded by remember { mutableStateOf(false) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(if (existing == null) "Tambah Task" else "Edit Task") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Judul") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Deskripsi") }, modifier = Modifier.fillMaxWidth())
-
-                ExposedDropdownMenuBox(expanded = pillarMenuExpanded, onExpandedChange = { pillarMenuExpanded = it }) {
-                    OutlinedTextField(
-                        value = pillars.firstOrNull { it.id == pillarId }?.name ?: "",
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Pilar") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = pillarMenuExpanded) },
-                        modifier = Modifier.fillMaxWidth().menuAnchor()
-                    )
-                    DropdownMenu(expanded = pillarMenuExpanded, onDismissRequest = { pillarMenuExpanded = false }) {
-                        pillars.forEach { p ->
-                            DropdownMenuItem(text = { Text(p.name) }, onClick = { pillarId = p.id; pillarMenuExpanded = false })
-                        }
-                    }
-                }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    TaskTier.entries.forEach { t ->
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(end = 8.dp)) {
-                            RadioButton(selected = tier == t, onClick = { tier = t })
-                            Text(t.name)
-                        }
-                    }
-                }
-
-                ExposedDropdownMenuBox(expanded = recurrenceMenuExpanded, onExpandedChange = { recurrenceMenuExpanded = it }) {
-                    OutlinedTextField(
-                        value = recurrence.name,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Recurrence") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = recurrenceMenuExpanded) },
-                        modifier = Modifier.fillMaxWidth().menuAnchor()
-                    )
-                    DropdownMenu(expanded = recurrenceMenuExpanded, onDismissRequest = { recurrenceMenuExpanded = false }) {
-                        TaskRecurrence.entries.forEach { r ->
-                            DropdownMenuItem(text = { Text(r.name) }, onClick = { recurrence = r; recurrenceMenuExpanded = false })
-                        }
-                    }
-                }
-
-                if (recurrence == TaskRecurrence.WEEKLY) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        val labels = listOf("Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min")
-                        labels.forEachIndexed { idx, label ->
-                            val dayNum = idx + 1
-                            FilterChip(
-                                selected = selectedDays.contains(dayNum),
-                                onClick = {
-                                    selectedDays = if (selectedDays.contains(dayNum)) selectedDays - dayNum else selectedDays + dayNum
-                                },
-                                label = { Text(label) }
-                            )
-                        }
-                    }
-                }
-
-                OutlinedTextField(
-                    value = targetMinutes,
-                    onValueChange = { targetMinutes = it.filter { c -> c.isDigit() } },
-                    label = { Text("Target menit (opsional)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                enabled = title.isNotBlank() && pillarId.isNotBlank(),
-                onClick = {
-                    val task = Task(
-                        id = existing?.id ?: "t_${System.currentTimeMillis()}",
-                        title = title,
-                        description = description,
-                        pillarId = pillarId,
-                        tier = tier,
-                        recurrence = recurrence,
-                        targetMinutes = targetMinutes.toIntOrNull(),
-                        daysOfWeek = if (recurrence == TaskRecurrence.WEEKLY) selectedDays.sorted().joinToString(",") else null,
-                        active = true,
-                        order = existing?.order ?: 999,
-                        createdAt = existing?.createdAt ?: System.currentTimeMillis()
-                    )
-                    onSave(task)
-                }
-            ) { Text("Simpan") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Batal") }
-        }
-    )
 }

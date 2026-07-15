@@ -22,6 +22,7 @@ data class TodayUiState(
     val isLoading: Boolean = true,
     val currentDate: LocalDate = LocalDate.now(),
     val dayNumber: Long = 1,
+    val periodLengthDays: Int = 90,
     val streak: Int = 0,
     val completionRate: Float = 0f,
     val wajibTasks: List<TaskWithCompletion> = emptyList(),
@@ -50,6 +51,7 @@ class TodayViewModel(
         repository.getAllCompletions(),
         repository.getJournalEntryForDate(todayStr),
         settingsRepository.startDateFlow,
+        settingsRepository.periodLengthDaysFlow,
         journalInput
     ) { values ->
         @Suppress("UNCHECKED_CAST")
@@ -60,7 +62,8 @@ class TodayViewModel(
         val allCompletions = values[2] as List<TaskCompletion>
         val journal = values[3] as JournalEntry?
         val startDateStr = values[4] as String
-        val jInput = values[5] as String
+        val periodLengthDays = values[5] as Int
+        val jInput = values[6] as String
 
         val currentDate = today
         val startDate = LocalDate.parse(startDateStr)
@@ -89,6 +92,7 @@ class TodayViewModel(
             isLoading = false,
             currentDate = currentDate,
             dayNumber = dayNumber,
+            periodLengthDays = periodLengthDays,
             streak = streak,
             completionRate = rate,
             wajibTasks = wajib,
