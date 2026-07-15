@@ -76,6 +76,13 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
 
     if (uiState.isLoading) return
 
+    androidx.compose.runtime.LaunchedEffect(uiState.dailyReminderTime) {
+        com.fazli.momentum.notification.ReminderScheduler.scheduleDaily(context, uiState.dailyReminderTime)
+    }
+    androidx.compose.runtime.LaunchedEffect(uiState.weeklyReviewReminderEnabled) {
+        com.fazli.momentum.notification.ReminderScheduler.scheduleWeekly(context, uiState.weeklyReviewReminderEnabled)
+    }
+
     var showTaskDialog by remember { mutableStateOf(false) }
     var editingTask by remember { mutableStateOf<Task?>(null) }
     var defaultPillarIdForNewTask by remember { mutableStateOf<String?>(null) }

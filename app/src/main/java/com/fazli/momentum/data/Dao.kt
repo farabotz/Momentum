@@ -26,6 +26,9 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE active = 1 ORDER BY `order` ASC")
     fun getActiveTasksFlow(): Flow<List<Task>>
 
+    @Query("SELECT * FROM tasks WHERE active = 1 ORDER BY `order` ASC")
+    suspend fun getActiveTasks(): List<Task>
+
     @Query("SELECT * FROM tasks ORDER BY `order` ASC")
     suspend fun getTasks(): List<Task>
 

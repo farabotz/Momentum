@@ -19,6 +19,7 @@ class MomentumRepository(
 
     fun getTasks(): Flow<List<Task>> = taskDao.getTasksFlow()
     fun getActiveTasks(): Flow<List<Task>> = taskDao.getActiveTasksFlow()
+    suspend fun getActiveTasksList(): List<Task> = taskDao.getActiveTasks()
     suspend fun getTasksList(): List<Task> = taskDao.getTasks()
     suspend fun getTaskById(id: String): Task? = taskDao.getTaskById(id)
     suspend fun insertTasks(tasks: List<Task>) = taskDao.insertTasks(tasks)

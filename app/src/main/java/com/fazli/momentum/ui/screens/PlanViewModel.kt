@@ -138,6 +138,7 @@ class PlanViewModel(
     fun toggleTask(taskId: String, date: LocalDate, completed: Boolean) {
         viewModelScope.launch {
             repository.toggleCompletion(taskId, date.toString(), completed)
+            com.fazli.momentum.widget.WidgetRefresher.refresh()
         }
     }
 

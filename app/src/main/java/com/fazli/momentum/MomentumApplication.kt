@@ -5,8 +5,14 @@ import com.fazli.momentum.data.AppDatabase
 import com.fazli.momentum.data.MomentumRepository
 import com.fazli.momentum.data.SettingsRepository
 import com.fazli.momentum.data.createSettingsDataStore
+import com.fazli.momentum.widget.WidgetRefresher
 
 class MomentumApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        WidgetRefresher.init(this)
+    }
+
     private val database by lazy { AppDatabase.getDatabase(this) }
 
     val repository by lazy {
